@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -17,13 +18,12 @@ public class HelloController {
     public TextField one1; @FXML public TextField one2; @FXML public TextField one3; @FXML public TextField one4; @FXML public TextField one5;
     @FXML
     public TextField two1; @FXML public TextField two2; @FXML public TextField two3; @FXML public TextField two4; @FXML public TextField two5;
+    @FXML
+    public Label notEnoughLettersText;
+
 
     @FXML
-    public Button start;
-    private KeyEvent keyEvent;
-
-
-    public void start() {
+    public void initialize() {
         ArrayList<ArrayList<TextField>> allRows = new ArrayList<>();
 
         ArrayList<TextField> row1 = new ArrayList<>();
@@ -34,65 +34,71 @@ public class HelloController {
 
         allRows.add(row1);allRows.add(row2);
 
+        disableRow(allRows);
+
         setOneLetterOnly(allRows);
 
-        //disableRow(allRows);
-
-
-
-
-        for(int i = 0; i< row1.size();i++){
+        for(int i = 0; i < row1.size();i++){
             int x = i;
-
-            row1.get(x).textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    char letter = newValue.charAt(0);
-                    if(x!=4){
-                        row1.get(x+1).requestFocus();
+            // "BACKSPACE" PRESSED
+            row1.get(x).addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+                if(key.getCode() == KeyCode.BACK_SPACE) {
+                    notEnoughLettersText.setText("");
+                    if(x!=0){
+                        row1.get(x).setText("");
+                        row1.get(x).setEditable(false);
+                        row1.get(x-1).setEditable(true);
+                        row1.get(x-1).requestFocus();
+                    } else{
+                        row1.get(x).setText("");
+                        row1.get(x).requestFocus();
                     }
                 }
             });
 
-            
-
-        }
-
-/*
-        for(int i = 0; i < row1.size(); i++){
-            int k = i + 1; int x = i;
-            if(i<4){
-                row1.get(i).addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-                    if(key.getCode().equals(KeyCode.BACK_SPACE)){
-                        System.out.println("back");
-                    } else if(key.getCode().isLetterKey()){
-                        row1.get(x).textProperty().addListener(new ChangeListener<String>() {
-                            @Override
-                            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                                char letter = newValue.charAt(0);
-                                if(Character.isLetter(letter)){
-                                    previousTextField = row1.get(x);
-                                    row1.get(x).setEditable(false);
-                                    row1.get(k).requestFocus();
-                                }
-                            }
-                        });
+            // "ENTER" PRESSED
+            row1.get(x).addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+                if(key.getCode() == KeyCode.ENTER) {
+                    if(allFieldsFull(row1)){
+                        System.out.println("true");
+                    } else{
+                        notEnoughLettersText.setText("Not Enough Letters");
+                        System.out.println("false");
                     }
-                });
-            } else{
-                row1.get(i).textProperty().addListener(new ChangeListener<String>() {
-                    @Override
-                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                        char letter = newValue.charAt(0);
+                }
+            });
+
+            // WORD PRESSED
+            row1.get(x).textProperty().addListener((observable, oldValue, newValue) -> {
+                notEnoughLettersText.setText("");
+                if(newValue.matches("[a-zA-Z]+")){
+                    if(x!=4){
+                        row1.get(x+1).setEditable(true);
+                        row1.get(x).setEditable(false);
+                        row1.get(x+1).requestFocus();
+
                     }
-                });
-            }
+                } else{
+                    row1.get(x).setText("");
+                }
+            });
         }
-
- */
-
-
     }
+
+
+
+    //CHECKS IF ALL FIELDS ARE FULL
+    private boolean allFieldsFull(ArrayList<TextField> row1) {
+        if(!row1.get(4).getText().trim().isEmpty()){
+            return true;
+        } else{
+            if(!notEnoughLettersText.equals("")){
+                notEnoughLettersText.setText("");
+            }
+            return false;
+        }
+    }
+
 
     //SETS 1 CHAR LIMIT FOR ALL TEXTFIELDS
     private void setOneLetterOnly(ArrayList<ArrayList<TextField>> allRows) {

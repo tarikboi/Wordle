@@ -16,24 +16,18 @@ import java.io.IOException;
 
 public class HelloApplication extends Application {
 
+    public static Stage rootStage;
+    public static Scene rootScene;
+    public static Parent rootParent;
+
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("hello-view.fxml"));
-        Parent root = loader.load();
-        HelloController controller = loader.getController();
-        Scene scene = new Scene(root);
-        /*
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                System.out.println(event.getCode());
-            }
-        });
-
-         */
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.show();
+        rootStage = stage;
+        rootParent = FXMLLoader.load(getClass().getResource("hello-view.fxml"));
+        rootScene = new Scene(rootParent);
+        rootStage.setScene(rootScene);
+        rootStage.setResizable(false);
+        rootStage.show();
 
         /*
         Parent root = FXMLLoader.load(getClass().getResource("hello-view.fxml"));
