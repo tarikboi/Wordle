@@ -29,13 +29,7 @@ public class HelloApplication extends Application {
         rootStage.setResizable(false);
         rootStage.show();
 
-        /*
-        Parent root = FXMLLoader.load(getClass().getResource("hello-view.fxml"));
-        rootStage.setScene(new Scene(root));
-        rootStage.setResizable(false);
-        rootStage.show();
 
-         */
     }
 
     public static void main(String[] args) {
