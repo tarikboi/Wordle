@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -33,57 +34,74 @@ public class HelloController {
         row2.add(two1); row2.add(two2);row2.add(two3);row2.add(two4);row2.add(two5);
 
         allRows.add(row1);allRows.add(row2);
-
         disableRow(allRows);
-
         setOneLetterOnly(allRows);
 
-        for(int i = 0; i < row1.size();i++){
-            int x = i;
-            // "BACKSPACE" PRESSED
-            row1.get(x).addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-                if(key.getCode() == KeyCode.BACK_SPACE) {
+
+        for (int a = 0; a < allRows.size(); a++) {
+            //System.out.println(a);
+            //System.out.println(allRows.get(a).toString());
+            allRows.get(a).get(0).setEditable(true);
+            ArrayList<TextField> currentRow = allRows.get(a);
+
+            for (int i = 0; i < currentRow.size(); i++) {
+                int x = i;
+                // "BACKSPACE" PRESSED
+                currentRow.get(x).addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+                    if (key.getCode() == KeyCode.BACK_SPACE) {
+                        notEnoughLettersText.setText("");
+                        if (x != 0) {
+                            currentRow.get(x).setText("");
+                            currentRow.get(x).setEditable(false);
+                            currentRow.get(x - 1).setEditable(true);
+                            currentRow.get(x - 1).requestFocus();
+                        } else {
+                            currentRow.get(x).setText("");
+                            currentRow.get(x).requestFocus();
+                        }
+                    }
+                });
+
+                // "ENTER" PRESSED
+                currentRow.get(x).addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+                    if (key.getCode() == KeyCode.ENTER) {
+                        if (allFieldsFull(currentRow)) {
+                            System.out.println("true");
+                        } else {
+                            notEnoughLettersText.setText("Not Enough Letters");
+                            System.out.println("false");
+                        }
+                    }
+                });
+
+                // WORD PRESSED
+                currentRow.get(x).textProperty().addListener((observable, oldValue, newValue) -> {
                     notEnoughLettersText.setText("");
-                    if(x!=0){
-                        row1.get(x).setText("");
-                        row1.get(x).setEditable(false);
-                        row1.get(x-1).setEditable(true);
-                        row1.get(x-1).requestFocus();
-                    } else{
-                        row1.get(x).setText("");
-                        row1.get(x).requestFocus();
-                    }
-                }
-            });
+                    if (newValue.matches("[a-zA-Z]+")) {
+                        if (x != 4) {
+                            currentRow.get(x + 1).setEditable(true);
+                            currentRow.get(x).setEditable(false);
+                            currentRow.get(x + 1).requestFocus();
 
-            // "ENTER" PRESSED
-            row1.get(x).addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-                if(key.getCode() == KeyCode.ENTER) {
-                    if(allFieldsFull(row1)){
-                        System.out.println("true");
-                    } else{
-                        notEnoughLettersText.setText("Not Enough Letters");
-                        System.out.println("false");
+                        }
+                    } else {
+                        currentRow.get(x).setText("");
                     }
-                }
-            });
-
-            // WORD PRESSED
-            row1.get(x).textProperty().addListener((observable, oldValue, newValue) -> {
-                notEnoughLettersText.setText("");
-                if(newValue.matches("[a-zA-Z]+")){
-                    if(x!=4){
-                        row1.get(x+1).setEditable(true);
-                        row1.get(x).setEditable(false);
-                        row1.get(x+1).requestFocus();
-
-                    }
-                } else{
-                    row1.get(x).setText("");
-                }
-            });
+                });
+            }
         }
+
     }
+
+    /*
+    private void enterPressed(ArrayList<TextField> theRow) {
+        for(int i = 0; i< theRow.size(); i++){
+            theRow.get(i).setStyle("-fx-background-color: black");
+        }
+        currentRow = allRows.get(1);
+    }
+
+     */
 
 
 
@@ -128,8 +146,6 @@ public class HelloController {
                 allRows.get(i).get(j).setEditable(false);
             }
         }
-        allRows.get(0).get(0).setEditable(true);
-
     }
 
 }
