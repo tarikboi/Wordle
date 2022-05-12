@@ -38,6 +38,7 @@ public class HelloController {
         setOneLetterOnly(allRows);
 
 
+
         for (int a = 0; a < allRows.size(); a++) {
             //System.out.println(a);
             //System.out.println(allRows.get(a).toString());
